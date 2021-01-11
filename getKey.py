@@ -2,8 +2,9 @@ import requests
 import json
 
 # Read the client parameters that are needed for generating the token key
-with open('parameters.json', 'r') as json_file:
-    parameters = json.load(json_file)
+json_file = open('parameters.json', 'r')
+parameters = json.load(json_file)
+json_file.close()
 
 base_url = "https://webexapis.com/v1/access_token"
 grant_type = "authorization_code"
@@ -24,7 +25,15 @@ print (url)
 
 # You need to do a post method
 response = requests.request("POST", url, headers=headers, data=payload)
+response_json = json.loads(response.text)
 
-# Just print the response no need to be fancy or easy to read since only use once
 print(response)
-print(response.text)
+print(response_json)
+
+json_file =  open('parameters.json', 'w')
+
+parameters['access_token'] = response_json['access_token']
+parameters['refresh_token'] = response_json['refresh_token']
+
+json.dump(parameters, json_file)
+json_file.close()
