@@ -1,6 +1,6 @@
 # Sensitive files
 parameters.json
-toke.log
+token.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
