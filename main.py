@@ -1,16 +1,15 @@
 import requests
 import json
 
-def apiCallReturnJSON(method, api_url):
+def apiCallReturnJSON(token, method, api_url, payload):
 
     # TODO: Check if the token is still valid
 
     url = "https://webexapis.com/v1/{}".format(api_url)
     headers = {
     'Content-Type': 'application/json',
-    'Authorization': 'Bearer {}'.format(getAccessToken())
+    'Authorization': 'Bearer {}'.format(token)
     }
-    payload = {}
 
     response = requests.request(method, url, headers=headers, data=payload)
     print("Response Status: {} \n".format(response))
@@ -57,7 +56,7 @@ def renewAccessToken():
     json_file.close()
 
 
-def getAccessToken():
+def getPersonalToken():
     json_file = open('parameters.json', 'r')
     parameters = json.load(json_file)
     json_file.close()
@@ -66,11 +65,45 @@ def getAccessToken():
 
     return parameters['access_token']
 
+def getBotToken():
+    json_file = open('parameters.json', 'r')
+    parameters = json.load(json_file)
+    json_file.close()
+
+    print("Access Token: {} \n".format(parameters['bot_token']))
+
+    return parameters['bot_token']
+
 
 def getAllMeetings():
 
-    print(apiCallReturnJSON("GET", "meetings"))
+    api_url = "meetings?meetingType=meeting"
+    meetings = apiCallReturnJSON(getPersonalToken(), "GET", api_url, {})
+    print(json.dumps(meetings, indent=4, sort_keys=True))
+    
+    api_url = "meetings?meetingType=scheduledMeeting"
+    meetings = apiCallReturnJSON(getPersonalToken(), "GET", api_url, {})
+    print(json.dumps(meetings, indent=4, sort_keys=True))
+
+
+def sendBotMsg(message):
+
+    # TODO: Think how to obtain the BOT room ID easily or when the room has been deleted.
+
+    api_url = "messages/"
+
+    # TODO: REMOVE HARD-CODED Value
+    payload = {
+        "roomId": "Y2lzY29zcGFyazovL3VzL1JPT00vNGU3MjE3NGItOTQ5Yy0zZmQ4LWFmMjgtNmE3MDc1ZjY4OWJh",
+        "text": "{}".format(message)
+    }
+    payload = json.dumps(payload)
+
+    response = apiCallReturnJSON(getBotToken(), "POST", api_url, payload)
+    print(json.dumps(response, indent=4, sort_keys=True))
 
 
 if __name__ == "__main__":
+    # sendBotMsg("Hello")
     getAllMeetings()
+    
