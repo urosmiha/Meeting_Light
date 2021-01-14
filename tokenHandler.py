@@ -74,7 +74,7 @@ if __name__ == "__main__":
         print("Old Token: {}".format(getPersonalToken()))
         print("Old Refresh Token: {}".format(getPersonalToken()))
 
-        access_token, refresh_token = renewAccessToken()
+        renewAccessToken()
 
         print("\n")
         print("New Token: {}".format(getPersonalToken()))
